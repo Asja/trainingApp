@@ -1,3 +1,4 @@
+require 'open-uri'
 # == Schema Information
 #
 # Table name: users
@@ -11,7 +12,7 @@
 
 class User < ActiveRecord::Base
   has_secure_password
-  attr_accessible :email, :name, :password, :password_confirmation
+  attr_accessible :email, :name, :password, :password_confirmation, :image_url
 
   validates :name, presence: true, length: { maximum: 32}
 
@@ -24,6 +25,8 @@ class User < ActiveRecord::Base
 
   validates :password_confirmation, presence: true
 
+  validates :verify_image
+
   before_save do |user|
    user.email = email.downcase 
   end
@@ -32,6 +35,10 @@ class User < ActiveRecord::Base
 
   def verify_image
     # For issue #5 and issue #3
-    true
+    if open(:image_url).content_type == "image/jpeg"
+      true
+    else
+      false
+    end
   end
 end
